@@ -15,8 +15,8 @@ defineProps<{ grid: RangeGrid }>()
       :key="i"
       class="w-6 h-6 rounded-sm"
       :class="{
-        'bg-[#89B4FA]': cell === 'self',
-        'bg-[#363852]': cell === 'range',
+        'bg-[#F9A825]': cell === 'self',
+        'bg-[#3D2E1A]': cell === 'range',
         'bg-transparent': cell === 'empty'
       }"
     />
