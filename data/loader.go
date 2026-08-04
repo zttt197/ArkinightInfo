@@ -179,7 +179,7 @@ func parseAll(dataRoot string) ([]Operator, error) {
 		}
 
 		talents := buildTalents(dto.Talents)
-		skills := buildSkills(dto.Skills, skillTable)
+		skills := buildSkills(dto.Skills, skillTable, rangeTable)
 		baseSkills := buildBaseSkills(id, building)
 		trust := buildTrust(dto.FavorKeyFrames)
 
@@ -384,7 +384,7 @@ func buildTalents(talents []talentDto) []TalentItem {
 	return result
 }
 
-func buildSkills(refs []skillRefDto, skillTable map[string]skillDto) []SkillItem {
+func buildSkills(refs []skillRefDto, skillTable map[string]skillDto, rangeTable map[string]rangeDto) []SkillItem {
 	var result []SkillItem
 	for i, r := range refs {
 		if r.SkillID == "" {
@@ -432,9 +432,10 @@ func buildSkills(refs []skillRefDto, skillTable map[string]skillDto) []SkillItem
 		}
 
 		result = append(result, SkillItem{
-			Title: fmt.Sprintf("技能%d · %s", i+1, name),
-			Meta:  strings.Join(metaParts, " · "),
-			Desc:  CleanText(maxLevel.Description, blackboard),
+			Title:     fmt.Sprintf("技能%d · %s", i+1, name),
+			Meta:      strings.Join(metaParts, " · "),
+			Desc:      CleanText(maxLevel.Description, blackboard),
+			RangeGrid: buildRangeGrid(maxLevel.RangeID, rangeTable),
 		})
 	}
 	return result

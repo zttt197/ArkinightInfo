@@ -89,11 +89,12 @@ type skillDto struct {
 }
 
 type skillLevelDto struct {
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	SkillType   interface{}    `json:"skillType"`
-	SpData      *spDataDto     `json:"spData"`
-	Duration    *float64       `json:"duration"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	SkillType   interface{}     `json:"skillType"`
+	SpData      *spDataDto      `json:"spData"`
+	Duration    *float64        `json:"duration"`
+	RangeID     string          `json:"rangeId"`
 	Blackboard  []blackboardDto `json:"blackboard"`
 }
 
@@ -181,9 +182,10 @@ type TalentItem struct {
 }
 
 type SkillItem struct {
-	Title string `json:"title"`
-	Meta  string `json:"meta"`
-	Desc  string `json:"desc"`
+	Title     string    `json:"title"`
+	Meta      string    `json:"meta"`
+	Desc      string    `json:"desc"`
+	RangeGrid RangeGrid `json:"rangeGrid"`
 }
 
 type BaseSkillItem struct {

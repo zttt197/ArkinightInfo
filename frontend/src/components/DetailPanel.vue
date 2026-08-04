@@ -91,6 +91,7 @@ const op = computed(() => store.selected)
           <span class="text-[11px] text-[#6C6E80]">{{ s.meta }}</span>
         </div>
         <p class="text-[13px] text-[#A5ADC6] mt-1 leading-5">{{ s.desc }}</p>
+        <RangeGrid v-if="s.rangeGrid && s.rangeGrid.rows > 0" :grid="s.rangeGrid" class="mt-2" />
       </div>
 
       <!-- Base skills -->
