@@ -1,0 +1,314 @@
+<Window x:Class="ArkinightInfo.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="明日方舟干员查询"
+        Height="780" Width="1200"
+        MinHeight="600" MinWidth="960"
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Microsoft YaHei UI"
+        Background="#F5F6FA">
+    <Grid Margin="14">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- 顶部：搜索 / 筛选 / 更新 -->
+        <Grid Grid.Row="0" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox Grid.Column="0"
+                     Width="220" Padding="8,6"
+                     VerticalContentAlignment="Center"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     ToolTip="输入干员名或代号搜索"/>
+
+            <ComboBox Grid.Column="2" Width="130"
+                      ItemsSource="{Binding ProfessionOptions}"
+                      SelectedItem="{Binding SelectedProfession}"/>
+
+            <ComboBox Grid.Column="4" Width="100"
+                      ItemsSource="{Binding RarityOptions}"
+                      SelectedItem="{Binding SelectedRarity}"/>
+
+            <Button Grid.Column="6"
+                    Padding="16,7"
+                    Content="检查并更新"
+                    Command="{Binding UpdateCommand}"
+                    ToolTip="先检查数据版本，有更新才下载"/>
+        </Grid>
+
+        <!-- 中部：左侧列表 + 右侧详情 -->
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="310"/>
+                <ColumnDefinition Width="14"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="White" BorderBrush="#DDE1E8" BorderThickness="1" CornerRadius="8">
+                <Grid>
+                    <ListBox ItemsSource="{Binding Operators}"
+                             SelectedItem="{Binding SelectedOperator}"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Height="62" Margin="2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="56"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Grid Grid.Column="0" Width="48" Height="48" VerticalAlignment="Center">
+                                        <Border x:Name="AvatarPlaceholder"
+                                                Background="#E7EAF2" CornerRadius="6">
+                                            <Border.Style>
+                                                <Style TargetType="Border">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Avatar}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Border.Style>
+                                            <TextBlock Text="{Binding Initial}"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center"
+                                                       FontSize="20" Foreground="#8A93A6"/>
+                                        </Border>
+                                        <Image Source="{Binding Avatar}" Stretch="UniformToFill" Margin="2">
+                                            <Image.Style>
+                                                <Style TargetType="Image">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Avatar}" Value="{x:Null}">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Image.Style>
+                                        </Image>
+                                    </Grid>
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Name}" FontSize="15" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding Appellation}" Margin="8,0,0,0"
+                                                       FontSize="11" Foreground="#8A93A6" VerticalAlignment="Bottom"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Stars}" FontSize="12" Foreground="#E8B84B" Margin="0,2,0,0"/>
+                                        <TextBlock Text="{Binding ClassLabel}" FontSize="11" Foreground="#5B6472" Margin="0,2,0,0"/>
+                                    </StackPanel>
+                                </Grid>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+
+                    <TextBlock Text="没有匹配的干员"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Foreground="#8A93A6" FontSize="13"
+                               Visibility="{Binding Operators, Converter={StaticResource CountToVisibility}}"/>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Column="2">
+                <TextBlock Text="从左侧选择一名干员查看详情"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"
+                           Foreground="#8A93A6" FontSize="14"
+                           Visibility="{Binding SelectedDetail, Converter={StaticResource InverseNullToVisibility}}"/>
+
+                <ScrollViewer VerticalScrollBarVisibility="Auto"
+                              Visibility="{Binding SelectedDetail, Converter={StaticResource NullToVisibility}}">
+                    <StackPanel DataContext="{Binding SelectedDetail}" Margin="4">
+                        <!-- 基础信息 -->
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="110"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <Grid Grid.Column="0" Width="96" Height="96" VerticalAlignment="Top">
+                                <Border x:Name="DetailPlaceholder" Background="#E7EAF2" CornerRadius="8">
+                                    <Border.Style>
+                                        <Style TargetType="Border">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Avatar}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Visible"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Border.Style>
+                                    <TextBlock Text="{Binding Initial}" HorizontalAlignment="Center"
+                                               VerticalAlignment="Center" FontSize="38" Foreground="#8A93A6"/>
+                                </Border>
+                                <Image Source="{Binding Avatar}" Stretch="UniformToFill">
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Avatar}" Value="{x:Null}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                            </Grid>
+
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" FontSize="26" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Appellation}" Margin="10,4,0,0"
+                                               FontSize="14" Foreground="#8A93A6"/>
+                                    <Border Background="#FFF3DC" CornerRadius="4" Padding="6,2" Margin="10,4,0,0"
+                                            VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding RarityText}" FontSize="12" Foreground="#B8860B"/>
+                                    </Border>
+                                </StackPanel>
+                                <TextBlock Text="{Binding Stars}" FontSize="16" Foreground="#E8B84B" Margin="0,6,0,0"/>
+                                <WrapPanel Margin="0,10,0,0">
+                                    <Border Background="#E7EAF2" CornerRadius="4" Padding="8,3" Margin="0,0,8,6">
+                                        <TextBlock Text="{Binding ClassLabel}" FontSize="12" Foreground="#3D4450"/>
+                                    </Border>
+                                    <Border Background="#E7EAF2" CornerRadius="4" Padding="8,3" Margin="0,0,8,6">
+                                        <TextBlock Text="{Binding PositionLabel}" FontSize="12" Foreground="#3D4450"/>
+                                    </Border>
+                                    <Border Background="#E7EAF2" CornerRadius="4" Padding="8,3" Margin="0,0,8,6">
+                                        <TextBlock Text="{Binding NationLabel}" FontSize="12" Foreground="#3D4450"/>
+                                    </Border>
+                                    <TextBlock Text="{Binding TagsText}" FontSize="12" Foreground="#5B6472"
+                                               VerticalAlignment="Center" Margin="0,0,0,6"/>
+                                </WrapPanel>
+                                <TextBlock Margin="0,6,0,0" FontSize="12" Foreground="#5B6472"
+                                           Text="{Binding DeployCostText, StringFormat=部署费用 {0}, Mode=OneWay}"/>
+                                <TextBlock Margin="0,2,0,0" FontSize="12" Foreground="#5B6472"
+                                           Text="{Binding RedeployText, StringFormat=再部署 {0}, Mode=OneWay}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- 面板属性 -->
+                        <TextBlock Text="面板属性（满级）" Style="{StaticResource SectionTitle}"/>
+                        <Grid Margin="0,6,0,0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="60"/>
+                                <ColumnDefinition Width="70"/>
+                                <ColumnDefinition Width="90"/>
+                                <ColumnDefinition Width="60"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="阶段" Style="{StaticResource TableHeader}"/>
+                            <TextBlock Text="生命" Grid.Column="1" Style="{StaticResource TableHeader}"/>
+                            <TextBlock Text="攻击" Grid.Column="2" Style="{StaticResource TableHeader}"/>
+                            <TextBlock Text="防御" Grid.Column="3" Style="{StaticResource TableHeader}"/>
+                            <TextBlock Text="法抗" Grid.Column="4" Style="{StaticResource TableHeader}"/>
+                            <TextBlock Text="部署" Grid.Column="5" Style="{StaticResource TableHeader}"/>
+                            <TextBlock Text="再部署" Grid.Column="6" Style="{StaticResource TableHeader}"/>
+                            <TextBlock Text="阻挡" Grid.Column="7" Style="{StaticResource TableHeader}"/>
+                        </Grid>
+                        <ItemsControl ItemsSource="{Binding PhaseRows}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,4,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="150"/>
+                                            <ColumnDefinition Width="80"/>
+                                            <ColumnDefinition Width="80"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="60"/>
+                                            <ColumnDefinition Width="70"/>
+                                            <ColumnDefinition Width="90"/>
+                                            <ColumnDefinition Width="60"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Text="{Binding Label}" Style="{StaticResource TableCell}"/>
+                                        <TextBlock Text="{Binding Hp}" Grid.Column="1" Style="{StaticResource TableCell}"/>
+                                        <TextBlock Text="{Binding Atk}" Grid.Column="2" Style="{StaticResource TableCell}"/>
+                                        <TextBlock Text="{Binding Def}" Grid.Column="3" Style="{StaticResource TableCell}"/>
+                                        <TextBlock Text="{Binding Res}" Grid.Column="4" Style="{StaticResource TableCell}"/>
+                                        <TextBlock Text="{Binding Cost}" Grid.Column="5" Style="{StaticResource TableCell}"/>
+                                        <TextBlock Text="{Binding Redeploy}" Grid.Column="6" Style="{StaticResource TableCell}"/>
+                                        <TextBlock Text="{Binding Block}" Grid.Column="7" Style="{StaticResource TableCell}"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- 信赖加成 -->
+                        <TextBlock Text="信赖加成" Style="{StaticResource SectionTitle}"/>
+                        <TextBlock Text="{Binding TrustText}" Style="{StaticResource SectionBody}"/>
+
+                        <!-- 天赋 -->
+                        <TextBlock Text="天赋" Style="{StaticResource SectionTitle}"/>
+                        <ItemsControl ItemsSource="{Binding Talents}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,6,0,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold"/>
+                                            <Border Background="#E7EAF2" CornerRadius="3" Padding="6,1" Margin="8,0,0,0">
+                                                <TextBlock Text="{Binding Meta}" FontSize="11" Foreground="#5B6472"/>
+                                            </Border>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Desc}" Style="{StaticResource SectionBody}" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- 技能 -->
+                        <TextBlock Text="技能" Style="{StaticResource SectionTitle}"/>
+                        <ItemsControl ItemsSource="{Binding Skills}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,6,0,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding Meta}" FontSize="11" Foreground="#8A93A6"
+                                                       Margin="8,2,0,0"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Desc}" Style="{StaticResource SectionBody}" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+
+                        <!-- 基建技能 -->
+                        <TextBlock Text="基建技能" Style="{StaticResource SectionTitle}"/>
+                        <ItemsControl ItemsSource="{Binding BaseSkills}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,6,0,0">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="{Binding Title}" FontSize="14" FontWeight="SemiBold"/>
+                                            <TextBlock Text="{Binding Meta}" FontSize="11" Foreground="#8A93A6"
+                                                       Margin="8,2,0,0"/>
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Desc}" Style="{StaticResource SectionBody}" Margin="0,4,0,0"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </Grid>
+
+        <!-- 底部状态栏 -->
+        <TextBlock Grid.Row="2" Text="{Binding StatusText}" Margin="0,10,0,0"
+                   FontSize="12" Foreground="#5B6472"/>
+    </Grid>
+</Window>
