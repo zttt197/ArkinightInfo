@@ -1,40 +1,59 @@
-# ArkinightInfo 明日方舟干员查询
+# Welcome to Your New Wails3 Project!
 
-一款纯本地运行的 Windows 桌面工具，用于查询《明日方舟》干员信息。
+Congratulations on generating your Wails3 application! This README will guide you through the next steps to get your project up and running.
 
-## 功能
+## Getting Started
 
-- 干员列表：按名称/代号搜索，按职业、星级筛选
-- 干员详情：面板属性（各精英化满级）、信赖加成、天赋、技能、基建技能
-- 手动更新：点击"检查并更新"，先比对数据版本，有新版才下载
-- 完全本地使用：数据下载到本地后离线可用，不联网也能查询
+1. Navigate to your project directory in the terminal.
 
-## 运行环境
+2. To run your application in development mode, use the following command:
 
-- Windows x64
-- .NET Desktop Runtime 8.0.x（若提示缺少运行时，安装
-  https://aka.ms/dotnet/8.0/dotnet-runtime-win-x64.exe）
+   ```
+   wails3 dev
+   ```
 
-## 使用
+   This will start your application and enable hot-reloading for both frontend and backend changes.
 
-1. 打开程序，点击右上角"检查并更新"，首次使用会自动下载游戏数据（约 30MB）。
-2. 数据下载完成后即可搜索、筛选、查看干员详情。
-3. 游戏更新后，再次点击"检查并更新"即可同步最新数据。
+3. To build your application for production, use:
 
-## 开发
+   ```
+   wails3 build
+   ```
 
-- 技术栈：C# / WPF（net8.0-windows），UI 样式基于 HandyControl
-- 数据解析：`src/ArkinightInfo/Data/GameData.cs`
-- 更新逻辑：`src/ArkinightInfo/Services/DataUpdater.cs`
-- 界面：`src/ArkinightInfo/MainWindow.xaml`
-- 开发过程遇到的问题与后续计划见 `DEVELOPMENT_NOTES.md`
+   This will create a production-ready executable in the `build` directory.
 
-## 数据来源
+## Exploring Wails3 Features
 
-- 干员数据：[Kengxxiao/ArknightsGameData](https://github.com/Kengxxiao/ArknightsGameData)
-  （社区从游戏客户端解包整理，随游戏版本自动更新，仅作个人学习使用）
-- 头像：暂未启用（原头像源已停更，见 DEVELOPMENT_NOTES.md）
+Now that you have your project set up, it's time to explore the features that Wails3 offers:
 
-## 许可说明
+1. **Check out the examples**: The best way to learn is by example. Visit the `examples` directory in the `v3/examples` directory to see various sample applications.
 
-本项目代码仅用于个人学习。游戏数据版权归鹰角网络所有，请勿将本工具及数据用于商业用途。
+2. **Run an example**: To run any of the examples, navigate to the example's directory and use:
+
+   ```
+   go run .
+   ```
+
+   Note: Some examples may be under development during the alpha phase.
+
+3. **Explore the documentation**: Visit the [Wails3 documentation](https://v3.wails.io/) for in-depth guides and API references.
+
+4. **Join the community**: Have questions or want to share your progress? Join the [Wails Discord](https://discord.gg/JDdSxwjhGf) or visit the [Wails discussions on GitHub](https://github.com/wailsapp/wails/discussions).
+
+## Project Structure
+
+Take a moment to familiarize yourself with your project structure:
+
+- `frontend/`: Contains your frontend code (HTML, CSS, JavaScript/TypeScript)
+- `main.go`: The entry point of your Go backend
+- `app.go`: Define your application structure and methods here
+- `wails.json`: Configuration file for your Wails project
+
+## Next Steps
+
+1. Modify the frontend in the `frontend/` directory to create your desired UI.
+2. Add backend functionality in `main.go`.
+3. Use `wails3 dev` to see your changes in real-time.
+4. When ready, build your application with `wails3 build`.
+
+Happy coding with Wails3! If you encounter any issues or have questions, don't hesitate to consult the documentation or reach out to the Wails community.

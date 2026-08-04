@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: 'Microsoft YaHei UI', 'PingFang SC', sans-serif;
+  background: #12131C;
+  color: #CDD6F4;
+}
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #2A2B3D; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #3A3B50; }
