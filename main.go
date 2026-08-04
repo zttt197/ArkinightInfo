@@ -3,6 +3,9 @@ package main
 import (
 	"embed"
 	"log"
+	"net/http"
+	"path/filepath"
+	"strings"
 
 	"arkinightinfo/data"
 
@@ -13,9 +16,20 @@ import (
 var assets embed.FS
 
 func main() {
-	opService := &OperatorService{
-		dataRoot: data.ResolveDataRoot(),
-	}
+	dataRoot := data.ResolveDataRoot()
+	opService := &OperatorService{dataRoot: dataRoot}
+
+	// Combine the embedded frontend assets with the avatar file server.
+	fsHandler := application.AssetFileServerFS(assets)
+	avatarDir := filepath.Join(dataRoot, "avatars")
+	combinedHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/avatars/") {
+			name := strings.TrimPrefix(r.URL.Path, "/avatars/")
+			http.ServeFile(w, r, filepath.Join(avatarDir, name))
+			return
+		}
+		fsHandler.ServeHTTP(w, r)
+	})
 
 	app := application.New(application.Options{
 		Name:        "明日方舟干员查询",
@@ -24,7 +38,7 @@ func main() {
 			application.NewService(opService),
 		},
 		Assets: application.AssetOptions{
-			Handler: application.AssetFileServerFS(assets),
+			Handler: combinedHandler,
 		},
 		Mac: application.MacOptions{
 			ApplicationShouldTerminateAfterLastWindowClosed: true,

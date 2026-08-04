@@ -188,11 +188,11 @@ func parseAll(dataRoot string) ([]Operator, error) {
 			initial = string([]rune(name)[0])
 		}
 
-		// Check for local avatar file, convert to file:// URL for frontend
+		// Check for local avatar file, serve via /avatars/ route
 		avatarPath := ""
 		avatarFile := filepath.Join(dataRoot, "avatars", id+".png")
 		if _, err := os.Stat(avatarFile); err == nil {
-			avatarPath = "file:///" + filepath.ToSlash(avatarFile)
+			avatarPath = "/avatars/" + id + ".png"
 		}
 
 		ops = append(ops, Operator{
