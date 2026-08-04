@@ -14,8 +14,9 @@ const store = useOperatorStore()
         :class="store.selectedId === op.id ? 'bg-[#1E2548]' : 'hover:bg-[#222336]'"
         @click="store.select(op.id)"
       >
-        <div class="w-12 h-12 rounded-md bg-[#252640] flex items-center justify-center flex-shrink-0">
-          <span class="text-xl text-[#5B5D6E]">{{ op.initial }}</span>
+        <div class="w-12 h-12 rounded-md bg-[#252640] flex items-center justify-center flex-shrink-0 overflow-hidden">
+          <img v-if="op.avatarPath" :src="op.avatarPath" class="w-full h-full object-cover" />
+          <span v-else class="text-xl text-[#5B5D6E]">{{ op.initial }}</span>
         </div>
         <div class="min-w-0">
           <div class="flex items-baseline gap-2">

@@ -21,8 +21,9 @@ const op = computed(() => store.selected)
     <div v-else class="h-full overflow-y-auto pl-1 pr-2">
       <!-- Basic info -->
       <div class="flex gap-4">
-        <div class="w-24 h-24 rounded-lg bg-[#252640] flex items-center justify-center flex-shrink-0">
-          <span class="text-[38px] text-[#5B5D6E]">{{ op.initial }}</span>
+        <div class="w-24 h-24 rounded-lg bg-[#252640] flex items-center justify-center flex-shrink-0 overflow-hidden">
+          <img v-if="op.avatarPath" :src="op.avatarPath" class="w-full h-full object-cover" />
+          <span v-else class="text-[38px] text-[#5B5D6E]">{{ op.initial }}</span>
         </div>
         <div class="min-w-0">
           <div class="flex items-center gap-2.5 flex-wrap">

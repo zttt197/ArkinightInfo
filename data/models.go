@@ -141,6 +141,7 @@ type Operator struct {
 	Talents       []TalentItem  `json:"talents"`
 	Skills        []SkillItem   `json:"skills"`
 	BaseSkills    []BaseSkillItem `json:"baseSkills"`
+	AvatarPath    string        `json:"avatarPath"`
 }
 
 type PhaseRow struct {

@@ -12,9 +12,12 @@ import (
 )
 
 const (
-	dataRepo   = "Kengxxiao/ArknightsGameData"
-	dataBranch = "master"
-	dataFolder = "zh_CN/gamedata/excel"
+	dataRepo    = "Kengxxiao/ArknightsGameData"
+	dataBranch  = "master"
+	dataFolder  = "zh_CN/gamedata/excel"
+	avatarRepo  = "fexli/ArknightsResource"
+	avatarBranch = "main"
+	avatarFolder = "avatar/ASSISTANT"
 )
 
 var dataFiles = []string{
@@ -78,6 +81,19 @@ func Update(dataRoot string, progress func(string)) error {
 	// Remove operator cache so it gets regenerated
 	cachePath := filepath.Join(dataRoot, cacheFile)
 	os.Remove(cachePath)
+
+	// Download missing avatars
+	ids, _ := ReadOperatorIDs(filepath.Join(gamedataDir, "character_table.json"))
+	missing := 0
+	for _, id := range ids {
+		if _, err := os.Stat(filepath.Join(avatarDir, id+".png")); os.IsNotExist(err) {
+			missing++
+		}
+	}
+	if missing > 0 {
+		progress(fmt.Sprintf("正在下载头像（共 %d 名干员，缺 %d 个）…", len(ids), missing))
+		DownloadAvatars(ids, avatarDir, progress)
+	}
 
 	progress("更新完成")
 	return nil
@@ -148,4 +164,28 @@ func ReadOperatorIDs(path string) ([]string, error) {
 		ids = append(ids, id)
 	}
 	return ids, nil
+}
+
+// DownloadAvatars downloads missing operator avatars from fexli/ArknightsResource.
+func DownloadAvatars(ids []string, avatarDir string, progress func(string)) {
+	done := 0
+	missing := 0
+	for _, id := range ids {
+		target := filepath.Join(avatarDir, id+".png")
+		if _, err := os.Stat(target); err == nil {
+			continue
+		}
+		missing++
+		url := fmt.Sprintf("https://raw.githubusercontent.com/%s/%s/%s/%s.png", avatarRepo, avatarBranch, avatarFolder, id)
+		if err := httpGetToFile(url, target); err != nil {
+			continue // skip missing avatars silently
+		}
+		done++
+		if done%50 == 0 || done == missing {
+			progress(fmt.Sprintf("头像下载进度：%d/%d", done, missing))
+		}
+	}
+	if done > 0 {
+		progress(fmt.Sprintf("头像下载完成：%d 个", done))
+	}
 }
