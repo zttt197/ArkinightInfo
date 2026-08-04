@@ -44,6 +44,6 @@
 
 ## 5. 待办与注意事项
 
-- Git 首次推送需要 SSH 凭据：配好后执行 `git push -u origin main`。
+- Git 推送：已完成首次推送（2026-08-04，main 分支 → git@github.com:zttt197/ArkinightInfo.git）。
 - `data/` 目录已加入 `.gitignore`（约 30MB 游戏数据不提交进仓库），首次使用点界面上的"检查并更新"下载。
 - 当前数据版本：76.0.0（2026/07/30），更新机制用 `data_version.txt` 比对，有新版才下载。
