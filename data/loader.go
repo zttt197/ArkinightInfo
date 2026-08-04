@@ -140,6 +140,16 @@ func parseAll(dataRoot string) ([]Operator, error) {
 		return nil, fmt.Errorf("解析 skill_table.json 失败: %w", err)
 	}
 
+	// Load range table (optional, for attack range display)
+	var rangeTable map[string]rangeDto
+	rangePath := filepath.Join(excel, "range_table.json")
+	if _, err := os.Stat(rangePath); err == nil {
+		rt, err := readJSON[map[string]rangeDto](rangePath)
+		if err == nil {
+			rangeTable = rt
+		}
+	}
+
 	var building *buildingDataDto
 	if _, err := os.Stat(buildingPath); err == nil {
 		b, err := readJSON[buildingDataDto](buildingPath)
@@ -163,7 +173,7 @@ func parseAll(dataRoot string) ([]Operator, error) {
 		}
 
 		rarity := parseRarity(dto.Rarity)
-		phases := buildPhases(dto.Phases)
+		phases := buildPhases(dto.Phases, rangeTable)
 		if len(phases) == 0 {
 			continue
 		}
@@ -273,7 +283,7 @@ func parseRarity(r string) int {
 	return v
 }
 
-func buildPhases(phases []phaseDto) []PhaseRow {
+func buildPhases(phases []phaseDto, rangeTable map[string]rangeDto) []PhaseRow {
 	var result []PhaseRow
 	for i, p := range phases {
 		frames := p.AttributesKeyFrames
@@ -286,17 +296,63 @@ func buildPhases(phases []phaseDto) []PhaseRow {
 		}
 		d := last.Data
 		result = append(result, PhaseRow{
-			Label:    fmt.Sprintf("精英%d 满级 Lv.%d", i, last.Level),
-			Hp:       formatNum(d.MaxHp),
-			Atk:      formatNum(d.Atk),
-			Def:      formatNum(d.Def),
-			Res:      formatNum(d.MagicResistance),
-			Cost:     formatNum(d.Cost),
-			Redeploy: formatNum(d.RespawnTime) + "s",
-			Block:    formatNum(d.BlockCnt),
+			Label:     fmt.Sprintf("精英%d 满级 Lv.%d", i, last.Level),
+			Hp:        formatNum(d.MaxHp),
+			Atk:       formatNum(d.Atk),
+			Def:       formatNum(d.Def),
+			Res:       formatNum(d.MagicResistance),
+			Cost:      formatNum(d.Cost),
+			Redeploy:  formatNum(d.RespawnTime) + "s",
+			Block:     formatNum(d.BlockCnt),
+			RangeGrid: buildRangeGrid(p.RangeID, rangeTable),
 		})
 	}
 	return result
+}
+
+func buildRangeGrid(rangeID string, rangeTable map[string]rangeDto) RangeGrid {
+	if rangeTable == nil || rangeID == "" {
+		return RangeGrid{}
+	}
+	rd, ok := rangeTable[rangeID]
+	if !ok || len(rd.Grids) == 0 {
+		return RangeGrid{}
+	}
+
+	// Find bounds
+	minRow, maxRow := 0, 0
+	minCol, maxCol := 0, 0
+	for _, g := range rd.Grids {
+		if g.Row < minRow { minRow = g.Row }
+		if g.Row > maxRow { maxRow = g.Row }
+		if g.Col < minCol { minCol = g.Col }
+		if g.Col > maxCol { maxCol = g.Col }
+	}
+	// Include (0,0) operator position
+	if 0 < minRow { minRow = 0 }
+	if 0 > maxRow { maxRow = 0 }
+	if 0 < minCol { minCol = 0 }
+	if 0 > maxCol { maxCol = 0 }
+
+	rows := maxRow - minRow + 1
+	cols := maxCol - minCol + 1
+	grid := make([]string, rows*cols)
+	for i := range grid { grid[i] = "empty" }
+
+	// Mark operator position
+	grid[(-minRow)*cols + (-minCol)] = "self"
+
+	// Mark range cells
+	for _, g := range rd.Grids {
+		r := g.Row - minRow
+		c := g.Col - minCol
+		idx := r*cols + c
+		if idx >= 0 && idx < len(grid) {
+			grid[idx] = "range"
+		}
+	}
+
+	return RangeGrid{Rows: rows, Cols: cols, Grid: grid}
 }
 
 func buildTalents(talents []talentDto) []TalentItem {

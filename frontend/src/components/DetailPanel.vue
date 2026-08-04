@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useOperatorStore } from '../stores/operator'
+import RangeGrid from './RangeGrid.vue'
 
 const store = useOperatorStore()
 
@@ -58,6 +59,15 @@ const op = computed(() => store.selected)
           <span>{{ p.res }}</span><span>{{ p.cost }}</span><span>{{ p.redeploy }}</span><span>{{ p.block }}</span>
         </div>
       </div>
+
+      <!-- Attack Range -->
+      <template v-if="op.phases.some(p => p.rangeGrid && p.rangeGrid.rows > 0)">
+        <h3 class="text-[15px] font-bold text-[#CDD6F4] mt-4.5 mb-1">攻击范围</h3>
+        <div v-for="p in op.phases" :key="'r'+p.label" class="mt-1.5">
+          <span class="text-xs text-[#8A8DA0] mr-2">{{ p.label }}</span>
+          <RangeGrid :grid="p.rangeGrid" />
+        </div>
+      </template>
 
       <!-- Trust -->
       <h3 class="text-[15px] font-bold text-[#CDD6F4] mt-4.5 mb-1">信赖加成</h3>

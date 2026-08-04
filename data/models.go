@@ -1,5 +1,16 @@
 package data
 
+type rangeGridDto struct {
+	Row int `json:"row"`
+	Col int `json:"col"`
+}
+
+type rangeDto struct {
+	ID        string         `json:"id"`
+	Direction int            `json:"direction"`
+	Grids     []rangeGridDto `json:"grids"`
+}
+
 // ---------- JSON DTO (matching game data format) ----------
 
 type operatorDto struct {
@@ -21,6 +32,7 @@ type operatorDto struct {
 
 type phaseDto struct {
 	MaxLevel              int                    `json:"maxLevel"`
+	RangeID               string                 `json:"rangeId"`
 	AttributesKeyFrames   []attributeKeyFrameDto `json:"attributesKeyFrames"`
 }
 
@@ -145,14 +157,21 @@ type Operator struct {
 }
 
 type PhaseRow struct {
-	Label    string `json:"label"`
-	Hp       string `json:"hp"`
-	Atk      string `json:"atk"`
-	Def      string `json:"def"`
-	Res      string `json:"res"`
-	Cost     string `json:"cost"`
-	Redeploy string `json:"redeploy"`
-	Block    string `json:"block"`
+	Label     string    `json:"label"`
+	Hp        string    `json:"hp"`
+	Atk       string    `json:"atk"`
+	Def       string    `json:"def"`
+	Res       string    `json:"res"`
+	Cost      string    `json:"cost"`
+	Redeploy  string    `json:"redeploy"`
+	Block     string    `json:"block"`
+	RangeGrid RangeGrid `json:"rangeGrid"`
+}
+
+type RangeGrid struct {
+	Rows int      `json:"rows"`
+	Cols int      `json:"cols"`
+	Grid []string `json:"grid"` // "self" | "range" | "empty"
 }
 
 type TalentItem struct {
