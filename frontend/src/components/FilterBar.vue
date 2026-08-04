@@ -24,6 +24,12 @@ const store = useOperatorStore()
     >
       <option v-for="r in store.rarityOptions" :key="r" :value="r">{{ r }}</option>
     </select>
+    <button
+      class="px-3 py-1.5 border border-[#2A2B3D] text-[#8A8DA0] text-sm rounded hover:bg-[#222336] hover:text-[#CDD6F4] transition-colors"
+      @click="store.resetFilters()"
+    >
+      重置
+    </button>
     <div class="flex-1" />
     <button
       :disabled="store.loading"

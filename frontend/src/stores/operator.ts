@@ -92,11 +92,17 @@ export const useOperatorStore = defineStore('operator', () => {
     selectedId.value = id
   }
 
+  function resetFilters() {
+    searchText.value = ''
+    selectedProfession.value = '全部职业'
+    selectedRarity.value = '全部星级'
+  }
+
   return {
     all, searchText, selectedProfession, selectedRarity,
     selectedId, selected, filtered,
     statusText, dataVersion, loading,
     professionOptions, rarityOptions,
-    load, checkUpdate, doUpdate, select
+    load, checkUpdate, doUpdate, select, resetFilters
   }
 })
