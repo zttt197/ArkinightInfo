@@ -31,6 +31,9 @@ func main() {
 		fsHandler.ServeHTTP(w, r)
 	})
 
+	// Register download progress event so the frontend can listen.
+	application.RegisterEvent[string]("dl-progress")
+
 	app := application.New(application.Options{
 		Name:        "明日方舟干员查询",
 		Description: "Arknights 干员数据查询工具",
@@ -43,6 +46,11 @@ func main() {
 		Mac: application.MacOptions{
 			ApplicationShouldTerminateAfterLastWindowClosed: true,
 		},
+	})
+
+	// Wire the service progress callback to emit Wails events.
+	opService.SetProgressCallback(func(msg string) {
+		app.Event.Emit("dl-progress", msg)
 	})
 
 	app.Window.NewWithOptions(application.WebviewWindowOptions{

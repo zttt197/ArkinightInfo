@@ -60,7 +60,7 @@ func Update(dataRoot string, progress func(string)) error {
 	os.MkdirAll(avatarDir, 0755)
 
 	for i, name := range dataFiles {
-		progress(fmt.Sprintf("正在下载 %s（%d/%d）…", name, i+1, len(dataFiles)))
+		progress(fmt.Sprintf("下载数据 %d/%d %s %d%%", i+1, len(dataFiles), name, (i+1)*15/len(dataFiles)))
 		tmp := filepath.Join(gamedataDir, name+".tmp")
 		target := filepath.Join(gamedataDir, name)
 		if err := httpGetToFile(dataURL(name), tmp); err != nil {
@@ -96,7 +96,7 @@ func Update(dataRoot string, progress func(string)) error {
 		DownloadAvatars(ids, avatarDir, progress)
 	}
 
-	progress("更新完成")
+	progress("下载完成 100%")
 	return nil
 }
 
