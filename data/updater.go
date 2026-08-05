@@ -26,6 +26,7 @@ var dataFiles = []string{
 	"building_data.json",
 	"char_meta_table.json",
 	"range_table.json",
+	"release_dates.json",
 }
 
 // CheckResult holds the result of an update check.

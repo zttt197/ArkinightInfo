@@ -150,6 +150,16 @@ func parseAll(dataRoot string) ([]Operator, error) {
 		}
 	}
 
+	// Load release dates (optional)
+	var releaseDates map[string]string
+	releasePath := filepath.Join(excel, "release_dates.json")
+	if _, err := os.Stat(releasePath); err == nil {
+		rd, err := readJSON[map[string]string](releasePath)
+		if err == nil {
+			releaseDates = rd
+		}
+	}
+
 	var building *buildingDataDto
 	if _, err := os.Stat(buildingPath); err == nil {
 		b, err := readJSON[buildingDataDto](buildingPath)
@@ -225,6 +235,7 @@ func parseAll(dataRoot string) ([]Operator, error) {
 			Skills:        skills,
 			BaseSkills:    baseSkills,
 			AvatarPath:    avatarPath,
+			ReleaseDate:   releaseDates[id],
 		})
 	}
 

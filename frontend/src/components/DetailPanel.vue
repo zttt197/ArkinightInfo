@@ -40,6 +40,7 @@ const op = computed(() => store.selected)
             <span class="text-xs text-[#8A8DA0]">{{ op.tagsText }}</span>
           </div>
           <div class="text-xs text-[#8A8DA0] mt-1.5">部署费用 {{ op.deployCost }}</div>
+          <div v-if="op.releaseDate" class="text-xs text-[#8A8DA0] mt-0.5">上线时间 {{ op.releaseDate }}</div>
           <div class="text-xs text-[#8A8DA0] mt-0.5">再部署 {{ op.redeployText }}</div>
         </div>
       </div>
